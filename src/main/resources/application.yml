@@ -4,9 +4,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://database-1.c1qw6siawkhf.us-east-2.rds.amazonaws.com:3306
-    username: admin
-    password: angotrq0313
+    url: jdbc:mysql://localhost:3306/my_road
+    username: root
+    password: "@angotrq0313"
   thymeleaf:
     cache: false
     prefix: classpath:/templates/
