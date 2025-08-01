@@ -1,10 +1,10 @@
-package com.jangyujin.myRoad.domain;
+package com.jangyujin.myRoad.domain.schedule.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 
 @Entity
+@Table(name = "schedule")
 @Data
 public class Schedule {
     @Id

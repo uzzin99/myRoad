@@ -12,4 +12,7 @@ spring:
     prefix: classpath:/templates/
     suffix: .html
     mode: HTML
+  output:
+    ansi:
+      enabled: always
 

@@ -86,7 +86,7 @@
 
         // 날짜 기본값 설정
         document.getElementById('eventStart').value = info.startStr;
-        document.getElementById('eventEnd').value = info.endStr;
+        document.getElementById('eventEnd').value = info.startStr;
 
         // 모달 열기
         document.getElementById('eventModal').style.display = 'block';
@@ -119,14 +119,13 @@
       endDate: end
     };
 
-    // Axios POST 요청 (서버 API URL은 예시입니다)
+    // Axios POST 요청
     axios.post('/api/schedule/create', eventData)
       .then(response => {
       // 요청 성공 시, 받은 이벤트 데이터로 캘린더에 추가
       const savedEvent = response.data;
-
-      calendar.add
-      Event({
+      console.log("22222"+savedEvent);
+      calendar.addEvent({
 <!--        id: savedEvent.id, // 서버에서 생성한 ID가 있다고 가정-->
         title: savedEvent.title,
         start: savedEvent.startDate,
