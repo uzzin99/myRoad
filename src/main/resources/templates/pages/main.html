@@ -4,23 +4,7 @@
   <th:block th:replace="fragments/header.html :: fragment-header"></th:block>
 </head>
 <style>
-  #eventModal {
-    display: none;
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #fff;
-    padding: 20px;
-    border: 1px solid #ccc;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    z-index: 1000;
-  }
 
-  #eventModal input, #eventModal textarea {
-    width: 100%;
-    margin-bottom: 10px;
-  }
 </style>
 <body class="g-sidenav-show bg-gray-100">
   <div class="min-height-300 bg-dark position-absolute w-100"></div>
@@ -46,16 +30,62 @@
               <div id='calendar'></div>
 
               <!-- 모달 폼 -->
-              <div id="eventModal">
-                <h3>일정 추가</h3>
-                <input type="text" id="eventTitle" placeholder="제목 입력" />
-                <textarea id="eventDesc" rows="3" placeholder="내용 입력"></textarea>
-                <input type="date" id="eventStart" />
-                <input type="date" id="eventEnd" />
-                <button id="saveEventBtn">저장</button>
-                <button id="cancelEventBtn">취소</button>
-              </div>
+<!--              <div id="eventModal">-->
+<!--                <h3 id="myScheduleTitle">일정 추가</h3>-->
+<!--                <input type="hidden" id="eventId" value="">-->
+<!--                <input type="text" id="eventTitle" placeholder="제목 입력" />-->
+<!--                <textarea id="eventDesc" rows="3" placeholder="내용 입력"></textarea>-->
+<!--                <input type="date" id="eventStart" />-->
+<!--                <input type="date" id="eventEnd" />-->
+<!--                <button id="saveEventBtn">저장</button>-->
+<!--                <button id="cancelEventBtn">취소</button>-->
+<!--              </div>-->
               <!-- 모달 폼 -->
+
+              <!-- Modal -->
+              <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalMessageTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="myScheduleTitle">일정추가</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form>
+                        <div class="form-group">
+                          <input type="hidden" id="eventId" value="">
+                          <label for="eventTitle" class="col-form-label">제목</label>
+                          <input type="text" class="form-control" value="" id="eventTitle">
+                        </div>
+                        <div class="form-group">
+                          <label for="eventDesc" class="col-form-label">내용</label>
+                          <textarea class="form-control" id="eventDesc"></textarea>
+                        </div>
+                        <div class="form-group">
+                          <label for="eventStart" class="col-form-label">시작일</label>
+                          <input class="form-control datepicker" placeholder="Please select date" type="text" onfocus="focused(this)" onfocusout="defocused(this)" id="eventStart">
+                        </div>
+                        <div class="form-group">
+                          <label for="eventEnd" class="col-form-label">종료일</label>
+                          <input class="form-control datepicker" placeholder="Please select date" type="text" onfocus="focused(this)" onfocusout="defocused(this)" id="eventEnd">
+                        </div>
+
+<!--                        <input type="date" id="eventStart" />-->
+<!--                        <input type="date" id="eventEnd" />-->
+                      </form>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal" id="cancelEventBtn">닫기</button>
+                      <button type="button" class="btn bg-gradient-primary" id="saveEventBtn">저장</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- //Modal -->
+
             </div>
           </div>
         </div>
@@ -69,89 +99,23 @@
 
   <th:block th:replace="fragments/scripts.html :: fragment-footer-scripts"></th:block>
 </body>
+<script src="/js/calendar.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
 <script>
-  let calendar;
-  let selectedInfo = null;
-
-  document.addEventListener('DOMContentLoaded', function () {
-    const calendarEl = document.getElementById('calendar');
-
-    calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
-      selectable: true,
-      contentHeight: 600,
-      locale: "ko",
-      select: function (info) {
-        selectedInfo = info;
-
-        // 날짜 기본값 설정
-        document.getElementById('eventStart').value = info.startStr;
-        document.getElementById('eventEnd').value = info.startStr;
-
-        // 모달 열기
-        document.getElementById('eventModal').style.display = 'block';
-      },
-      eventClick: function (info) {
-        const event = info.event;
-        alert(
-          '제목: ' + event.title + '\n' +
-          '내용: ' + (event.extendedProps.description || '(없음)') + '\n' +
-          '시작일: ' + event.start.toISOString().slice(0, 10) + '\n' +
-          '종료일: ' + (event.end ? event.end.toISOString().slice(0, 10) : '(없음)')
-        );
+  const fp = flatpickr(".datepicker", {
+    dateFormat: "Y-m-d",
+    locale: "ko",
+    mode: "single", // 복수 선택 방지
+    // input에 이미 값이 있으면 그 날짜로 calendar도 맞춘다
+    defaultDate: document.querySelector(".datepicker").value || null,
+    onOpen: (selectedDates, dateStr, instance) => {
+      // 혹시 input 값이 바뀌어 있는데 캘린더가 안 따라오면 강제로 맞춘다
+      if (instance.input.value) {
+        //instance.clear();
+        instance.setDate(instance.input.value, false);
       }
-    });
-
-    calendar.render();
-  });
-
-  // 저장 버튼
-  document.getElementById('saveEventBtn').addEventListener('click', function () {
-    const title = document.getElementById('eventTitle').value;
-    const desc = document.getElementById('eventDesc').value;
-    const start = document.getElementById('eventStart').value;
-    const end = document.getElementById('eventEnd').value;
-
-    const eventData = {
-      title: title,
-      description: desc,
-      startDate: start,
-      endDate: end
-    };
-
-    // Axios POST 요청
-    axios.post('/api/schedule/create', eventData)
-      .then(response => {
-      // 요청 성공 시, 받은 이벤트 데이터로 캘린더에 추가
-      const savedEvent = response.data;
-      console.log("22222"+savedEvent);
-      calendar.addEvent({
-<!--        id: savedEvent.id, // 서버에서 생성한 ID가 있다고 가정-->
-        title: savedEvent.title,
-        start: savedEvent.startDate,
-        end: savedEvent.endDate,
-        allDay: true,
-        extendedProps: {
-          description: savedEvent.description
-        }
-      });
-
-      // 입력 초기화 및 모달 닫기
-      document.getElementById('eventTitle').value = '';
-      document.getElementById('eventDesc').value = '';
-      document.getElementById('eventStart').value = '';
-      document.getElementById('eventEnd').value = '';
-      document.getElementById('eventModal').style.display = 'none';
-    })
-    .catch(error => {
-      console.error('이벤트 저장 중 오류 발생:', error);
-      alert('이벤트 저장에 실패했습니다. 다시 시도해주세요.');
-    });
-  });
-
-  // 취소 버튼
-  document.getElementById('cancelEventBtn').addEventListener('click', function () {
-    document.getElementById('eventModal').style.display = 'none';
+    }
   });
 </script>
 </html>

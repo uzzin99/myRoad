@@ -25,12 +25,12 @@ public class Schedule {
 
     protected Schedule() {}
 
-    public Schedule(String title, String description, String startDate, String endDate) {
-        this.title = title;
-        this.description = description;
-        this.startDate = startDate;
-        this.endDate = endDate;
-    }
+//    public Schedule(String title, String description, String startDate, String endDate) {
+//        this.title = title;
+//        this.description = description;
+//        this.startDate = startDate;
+//        this.endDate = endDate;
+//    }
 
 
 }
