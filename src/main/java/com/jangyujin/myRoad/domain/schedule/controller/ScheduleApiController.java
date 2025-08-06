@@ -22,9 +22,6 @@ public class ScheduleApiController {
 
     @PostMapping("/create")
     public ResponseEntity<Schedule> createSchedule(@RequestBody Schedule schedule) {
-
-        System.out.println("받은 이벤트: " + schedule.getTitle() + ", " + schedule.getDescription() + ", " + schedule.getStartDate() + " ~ " + schedule.getEndDate());
-
         Schedule savedSchedule = scheduleService.saveSchedule(schedule);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedSchedule);
@@ -57,5 +54,12 @@ public class ScheduleApiController {
         return scheduleService.updateSchedule(id, scheduleDetails)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Schedule> deleteSchedule(@PathVariable Long  id) {
+        scheduleService.deleteSchedule(id);
+
+        return ResponseEntity.noContent().build(); // 204 No Content
     }
 }

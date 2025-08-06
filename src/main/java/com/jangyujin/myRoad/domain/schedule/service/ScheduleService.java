@@ -2,6 +2,7 @@ package com.jangyujin.myRoad.domain.schedule.service;
 
 import com.jangyujin.myRoad.domain.schedule.entity.Schedule;
 import com.jangyujin.myRoad.domain.schedule.repository.ScheduleRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,5 +48,13 @@ public class ScheduleService {
 
         Schedule updatedSchedule = scheduleRepository.save(schedule);
         return Optional.of(updatedSchedule);
+    }
+
+    // 일정 삭제
+    public void deleteSchedule(Long id) {
+        if (!scheduleRepository.existsById(id)) {
+            throw new EntityNotFoundException("해당 ID의 일정이 존재하지 않습니다: " + id);
+        }
+        scheduleRepository.deleteById(id);
     }
 }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <th:block th:replace="fragments/header.html :: fragment-header"></th:block>
+  <th:block th:replace="~{fragments/header.html :: fragment-header}"></th:block>
 </head>
 <style>
 
@@ -10,13 +10,13 @@
   <div class="min-height-300 bg-dark position-absolute w-100"></div>
 
   <!--aside-->
-  <th:block th:replace="fragments/aside.html :: fragment-aside"></th:block>
+  <th:block th:replace="~{fragments/aside.html :: fragment-aside}"></th:block>
   <!--End aside-->
 
   <main class="main-content position-relative border-radius-lg">
 
     <!-- Navbar -->
-    <th:block th:replace="fragments/nav.html :: fragment-nav"></th:block>
+    <th:block th:replace="~{fragments/nav.html :: fragment-nav}"></th:block>
     <!-- End Navbar -->
 
     <div class="container-fluid py-4">
@@ -91,13 +91,13 @@
         </div>
       </div>
       <!--footer-->
-      <th:block th:replace="fragments/footer.html :: fragment-footer"></th:block>
+      <th:block th:replace="~{fragments/footer.html :: fragment-footer}"></th:block>
       <!--End footer-->
     </div>
   </main>
-  <th:block th:replace="fragments/footer.html :: fragment-plugin"></th:block>
+  <th:block th:replace="~{fragments/footer.html :: fragment-plugin}"></th:block>
 
-  <th:block th:replace="fragments/scripts.html :: fragment-footer-scripts"></th:block>
+  <th:block th:replace="~{fragments/scripts.html :: fragment-footer-scripts}"></th:block>
 </body>
 <script src="/js/calendar.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

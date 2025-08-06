@@ -1,6 +1,5 @@
 let calendar;
 let selectedInfo = null;
-
 document.addEventListener('DOMContentLoaded', function () {
     const calendarEl = document.getElementById('calendar');
 
@@ -9,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
         selectable: true,
         contentHeight: 600,
         locale: "ko",
+        // ✅ 버튼에 listWeek 뷰 추가
         select: function (info) {
             selectedInfo = info;
 
@@ -24,31 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
         eventClick: function (info) {
             const eventId = info.event.id;  // 이벤트의 고유 id
 
-            axios.get(`/api/schedule/${eventId}`)
-                .then(response => {
-                    const event = response.data;
-
-                    // 모달에 상세 데이터 세팅
-                    document.getElementById('eventTitle').value = event.title;
-                    document.getElementById('eventDesc').value = event.description || '';
-                    document.getElementById('eventStart').value = event.startDate;
-                    document.getElementById('eventEnd').value = event.endDate;
-
-                     // 이벤트 수정용 id 저장
-                    document.getElementById('eventId').value = event.id;
-
-                    document.getElementById('myScheduleTitle').innerText = '일정 수정';
-
-                    // 모달 열기
-                    //document.getElementById('eventModal').style.display = 'block';
-                    const modal = new bootstrap.Modal(document.getElementById('eventModal'));
-                    modal.show();
-                })
-                .catch(error => {
-                    console.error('상세 일정 불러오기 실패:', error);
-                    alert('일정 상세정보를 불러오는데 실패했습니다.');
-                });
-
+            makeModal(eventId);
 
         }
     });
@@ -158,6 +134,44 @@ document.getElementById('cancelEventBtn').addEventListener('click', function () 
     resetModal();
 });
 
+// 모달 오픈
+document.querySelectorAll('.modelOpenBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        makeModal(btn.value);
+    });
+});
+
+// 선택 삭제
+$("#deleteBtn").click(function () {
+    let deleteCount = 0;
+    const total = $('input[name=scheduleCheck]:checked').length;
+
+    $('input[name=scheduleCheck]:checked').each(function () {
+        var id = $(this).val();
+
+         axios.delete(`/api/schedule/${id}`).then(response => {
+             if (response.status === 204) {
+                console.log("삭제 성공!");
+                deleteCount++;
+             }
+
+             // 모두 삭제 요청 완료되면 새로고침
+             if (deleteCount === total) {
+                 alert("삭제가 완료되었습니다.");
+                 location.reload();
+                 resetModal();
+             }
+
+         })
+         .catch(error => {
+             console.error('이벤트 삭제 중 오류:', error);
+             alert('이벤트 삭제에 실패했습니다.');
+         });
+
+
+    });
+});
+
 // 모달 초기화
 function resetModal() {
     // 모달 닫기
@@ -172,4 +186,30 @@ function resetModal() {
     document.getElementById('eventStart').value = '';
     document.getElementById('eventEnd').value = '';
     document.getElementById('eventId').value = ''; // 수정용 hidden
+}
+
+function makeModal(eventId) {
+    axios.get(`/api/schedule/${eventId}`).then(response => {
+        const event = response.data;
+
+        // 모달에 상세 데이터 세팅
+        document.getElementById('eventTitle').value = event.title;
+        document.getElementById('eventDesc').value = event.description || '';
+        document.getElementById('eventStart').value = event.startDate;
+        document.getElementById('eventEnd').value = event.endDate;
+
+         // 이벤트 수정용 id 저장
+        document.getElementById('eventId').value = event.id;
+
+        document.getElementById('myScheduleTitle').innerText = '일정 수정';
+
+        // 모달 열기
+        //document.getElementById('eventModal').style.display = 'block';
+        const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+        modal.show();
+    })
+    .catch(error => {
+        console.error('상세 일정 불러오기 실패:', error);
+        alert('일정 상세정보를 불러오는데 실패했습니다.');
+    });
 }
