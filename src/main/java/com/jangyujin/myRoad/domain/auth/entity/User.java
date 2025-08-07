@@ -49,18 +49,6 @@ public class User implements UserDetails {
 
     private boolean enabled; // 계정 활성 여부
 
-//    @ElementCollection(fetch = FetchType.EAGER)
-//    @Builder.Default
-//    private List<String> roles = new ArrayList<>();
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return this.roles.stream()
-//                .map(SimpleGrantedAuthority::new)
-//                .collect(Collectors.toList());
-//    }
-//    @Column(nullable = false, name = "role")
-//    private String role; // ROLE_USER, ROLE_ADMIN 등
-
     @Enumerated(EnumType.STRING)
     private Role role;
 

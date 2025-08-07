@@ -9,3 +9,6 @@ CREATE TABLE users (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     enabled BOOLEAN DEFAULT TRUE
 );
+
+//1234 암호화
+$2a$10$pAnalyU1pXcxMAcCkWSHMOxH6Eh2TH3cKmEGkCc3c.QKHY13OqdhC

@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // "ROLE_" 접두어 붙여야 Spring Security가 인식함
-        String roleName = "ROLE_" + user.getRole().name(); // 예: "ROLE_ADMIN"
+        String roleName = user.getRole().name(); // 예: "ROLE_ADMIN"
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(roleName);
 
         return new org.springframework.security.core.userdetails.User(

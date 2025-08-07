@@ -2,6 +2,7 @@ package com.jangyujin.myRoad.config.jwt;
 
 import com.jangyujin.myRoad.domain.auth.repository.UserRepository;
 import io.jsonwebtoken.*;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,10 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.security.core.Authentication;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -28,17 +26,10 @@ public class JwtTokenProvider {
 
     @Value("${jwt.secret}")
     private String secretKey;
-    private final long validityInMillisecond = 3600000;
 
-    @Autowired
-    private UserRepository userRepository;
+    @Value("${jwt.secret}")
+    private String tokenValidityInMilliseconds;
 
-    /**
-     * 일반 로그인 JWT 생성 (accessToken)
-     *
-     * @param authentication the authentication
-     * @return the jwt token
-     */
     public JwtToken generateToken(Authentication authentication) {
         // 권한  가져오기
         String authorities = authentication.getAuthorities().stream()
@@ -76,21 +67,11 @@ public class JwtTokenProvider {
      */
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token);
+            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
-        } catch (SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
-        } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
-        } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
-        } catch (IllegalArgumentException e) {
-            log.info("JWT claims string is empty.", e);
+        } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
     /**
@@ -103,15 +84,11 @@ public class JwtTokenProvider {
         // Jwt 토큰 복호화
         Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(accessToken).getBody();
 
-//        if (claims.get("auth") == null) {
-//            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
-//        }
-
         // 클레임에서 권한 정보 가져오기
-        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("auth").toString().split(","))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-
+        Collection<? extends GrantedAuthority> authorities =
+                Arrays.stream(claims.get("auth").toString().split(","))
+                        .map(SimpleGrantedAuthority::new) // ← 이게 중요함!
+                        .collect(Collectors.toList());
         // UserDetails 객체를 만들어서 Authentication return
         // UserDetails: interface, User: UserDetails를 구현한 class
         UserDetails principal = new User(claims.getSubject(), "", authorities);
